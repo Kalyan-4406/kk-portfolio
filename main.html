@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK | Vibrant Developer Portfolio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap">
+    <style>
+        /* --- GLOBAL COLOR VARIABLES --- */
+        :root {
+            /* Light Theme Defaults */
+            --color-primary-start: #FF7043; 
+            --color-primary-end: #EC407A; 
+            --color-accent: #7E57C2; 
+            --secondary-color: #3C4043; 
+            --bg-color: #F7F7F7; 
+            --card-bg: #FFFFFF;
+            --text-color-primary: #3C4043;
+            --nav-bg: #FFFFFF;
+            --nav-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- DARK MODE OVERRIDES (Applied via 'dark-mode' class on body) --- */
+        body.dark-mode {
+            --bg-color: #1A1A1A; 
+            --card-bg: #2A2A2A; 
+            --secondary-color: #E0E0E0; 
+            --text-color-primary: #FFFFFF;
+            --nav-bg: #1A1A1A;
+            --nav-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- GLOBAL BASICS --- */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            color: var(--secondary-color);
+            background-color: var(--bg-color); 
+            transition: background-color 0.5s ease;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* Custom scrollbar */
+        body::-webkit-scrollbar { width: 8px; }
+        body::-webkit-scrollbar-thumb { background: linear-gradient(45deg, var(--color-primary-start), var(--color-primary-end)); border-radius: 10px; }
+        body::-webkit-scrollbar-track { background-color: var(--bg-color); }
+
+        /* Navigation Bar Styling */
+        #main-nav {
+            background-color: var(--nav-bg);
+            box-shadow: var(--nav-shadow);
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+        }
+        .nav-link-hover { transition: color 0.3s; color: var(--secondary-color); }
+        .nav-link-hover:hover { color: var(--color-primary-end); border-bottom: 2px solid var(--color-primary-end); }
+        .nav-link-active { color: var(--color-primary-end) !important; font-weight: 700; border-bottom: 2px solid var(--color-primary-end); }
+        
+        /* Page Section Transitions */
+        .page-section {
+            opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            min-height: calc(100vh - 80px); padding-top: 2rem; padding-bottom: 4rem; display: none; 
+            width: 100%; max-width: 1280px; margin: 0 auto; position: relative;
+        }
+        .page-section.active { opacity: 1; transform: translateY(0); display: flex; flex-direction: column; align-items: center; }
+        
+        /* --- ANIMATIONS & CORE ELEMENTS --- */
+        .gradient-bg { background: linear-gradient(45deg, var(--color-primary-start), var(--color-primary-end)); }
+        
+        /* Typing Effect for Home Headline */
+        .typing-effect { border-right: 2px solid var(--color-primary-end); white-space: nowrap; overflow: hidden; animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite; width: 0; max-width: 100%; }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--color-primary-end); } }
+
+        /* Button Hover Effect (Lift and Shadow) */
+        .btn-primary { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .btn-primary:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 15px 25px rgba(236, 64, 122, 0.4); }
+        .btn-primary:active { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        
+        /* Project Card Hover Effect */
+        .project-card { transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05); background-color: var(--card-bg); }
+        .project-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 25px var(--color-accent); }
+        
+        /* Canvas & Content Layering */
+        .page-canvas { z-index: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .section-content { position: relative; z-index: 10; }
+
+        /* Social Icon Styling */
+        .social-icon { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); color: var(--secondary-color); margin: 0 10px; cursor: pointer; padding: 5px; border-radius: 50%; }
+        .social-icon:hover { transform: scale(1.3) translateY(-4px); color: var(--color-accent); filter: drop-shadow(0 0 8px var(--color-accent)); background-color: rgba(126, 87, 194, 0.1); }
+
+        /* --- ABOUT PAGE SPECIFIC STYLES --- */
+        #about .about-card { background-color: var(--card-bg); transition: background-color 0.5s ease, box-shadow 0.5s ease; }
+        #about .about-card p { color: var(--secondary-color); }
+        
+        /* --- TECH STACK SPECIFIC STYLES --- */
+        .skill-item { 
+            background-color: var(--card-bg); 
+            transition: all 0.3s ease-in-out; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .skill-item:hover { 
+            transform: translateX(5px); /* Subtle shift on hover */
+            box-shadow: 0 5px 15px rgba(126, 87, 194, 0.2);
+        }
+        
+        .skill-name { font-weight: 700; width: 150px; }
+        .skill-bar-container { flex-grow: 1; height: 10px; background-color: #EEE; border-radius: 5px; margin: 0 20px; overflow: hidden; position: relative; }
+        .skill-bar { height: 100%; background: linear-gradient(90deg, var(--color-primary-start), var(--color-primary-end)); transition: width 0.8s ease-in-out; border-radius: 5px; }
+        .skill-percent { font-weight: 700; width: 50px; text-align: right; opacity: 0; transition: opacity 0.3s ease-in-out; color: var(--color-accent); }
+        
+        /* COMBINED HOVER EFFECT: ONLY SHOW PERCENTAGE (No fading of other items) */
+        .skill-item:hover .skill-percent { opacity: 1; }
+
+        /* Project Button Styling */
+        .project-btn {
+            display: inline-flex; align-items: center; padding: 8px 15px; border-radius: 8px; color: white; font-weight: 600; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); background: linear-gradient(90deg, var(--color-primary-start), var(--color-primary-end)); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.5px;
+        }
+        .project-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(236, 64, 122, 0.5); }
+        .project-btn svg { margin-right: 6px; }
+
+        /* Input focus glow */
+        input:focus, textarea:focus { box-shadow: 0 0 0 3px rgba(126, 87, 194, 0.4); border-color: var(--color-accent) !important; }
+        
+        /* Tech Stack Tags */
+        .tech-tag { background-color: #EEE; color: var(--secondary-color); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; transition: background-color 0.2s; }
+        .tech-tag:hover { background-color: var(--color-accent); color: white; }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Sticky Navigation (Header) -->
+    <nav class="sticky top-0 z-50 shadow-lg border-b border-gray-100" id="main-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- LOGO: KK (Vibrant Look) -->
+                <a href="#home" class="text-3xl font-extrabold tracking-tight" style="color: var(--secondary-color);">
+                    <span class="gradient-text font-bold" style="background: linear-gradient(45deg, var(--color-primary-start), var(--color-primary-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KK</span> Dev
+                </a>
+                
+                <!-- Navigation Links & Theme Toggle -->
+                <div class="flex items-center space-x-8">
+                    <!-- Nav Links -->
+                    <div class="hidden md:flex space-x-8" id="desktop-nav">
+                        <a href="#home" class="nav-link-hover p-2 font-medium" data-target="home">Home</a>
+                        <a href="#about" class="nav-link-hover p-2 font-medium" data-target="about">About</a>
+                        <a href="#tech-stack" class="nav-link-hover p-2 font-medium" data-target="tech-stack">Tech Stack</a>
+                        <a href="#projects" class="nav-link-hover p-2 font-medium" data-target="projects">Projects</a>
+                        <a href="#contact-me" class="nav-link-hover p-2 font-medium" data-target="contact-me">Contact Me</a>
+                    </div>
+                    
+                    <!-- Theme Toggle Icon -->
+                    <button id="theme-toggle" class="p-2 rounded-full transition transform hover:scale-110 focus:outline-none" style="color: var(--secondary-color);">
+                        <svg id="sun-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="moon-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="w-full flex justify-center">
+
+        <!-- 1. HOME - Professional Landing Page (Interactive Particle Background) -->
+        <section id="home" class="page-section">
+            <canvas id="home-canvas" class="page-canvas"></canvas>
+            
+            <div class="max-w-4xl mx-auto text-center px-4 relative z-10 p-10 rounded-xl backdrop-blur-sm bg-white/10">
+                <p class="text-xl text-gray-300 mb-4 tracking-wider">Hello, I'm KK</p>
+                
+                <div class="flex justify-center mb-6">
+                    <h1 class="text-5xl md:text-6xl font-extrabold text-white tracking-tighter">
+                        I build <span class="typing-effect text-left inline-block w-full sm:w-auto" style="background: linear-gradient(90deg, var(--color-primary-start), var(--color-primary-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">beautiful web experiences.</span>
+                    </h1>
+                </div>
+
+                <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+                    A dedicated Full Stack Developer committed to creating clean, performant, and user-friendly digital solutions.
+                </p>
+                <a href="#projects" class="inline-block px-10 py-3 text-lg font-bold text-white rounded-full btn-primary gradient-bg">
+                    View My Work
+                </a>
+            </div>
+        </section>
+
+        <!-- 2. ABOUT - Clean Bio Section (Subtle Ripple Background) -->
+        <section id="about" class="page-section">
+            <canvas id="about-canvas" class="page-canvas"></canvas>
+            <div class="section-content w-full">
+                <h2 class="text-4xl font-extrabold mb-12" style="color: var(--secondary-color); border-bottom: 3px solid var(--color-primary-start);">About Me</h2>
+                <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-12 p-8 rounded-xl shadow-xl border border-gray-100 transition transform hover:shadow-2xl hover:scale-[1.005] about-card">
+                    <div class="md:w-1/3 flex justify-center">
+                        <img src="https://placehold.co/300x300/F0F0F0/7E57C2?text=KK+Profile" alt="Profile Picture" class="rounded-full w-48 h-48 object-cover border-4 border-white shadow-xl transition transform hover:rotate-3">
+                    </div>
+                    <div class="md:w-2/3 space-y-5">
+                        <p class="text-xl font-semibold" style="color: var(--color-primary-end);">Kalyan Kumar Reddy | Enthusiastic Developer & Polymath</p>
+                         <!-- NEW LINE INSERTED HERE -->
+                        <p>
+                            I prioritize continuous growth, mastering new tools, and ensuring every project exceeds expectations.
+                        </p>
+                        <!-- END NEW LINE -->
+                        <p>
+                            I am currently pursuing my Undergraduate degree in **Computer Science** at **Amrita Vishwa Vidhyapeetham** and am in my 3rd year. This foundation fuels my enthusiasm across multiple domains.
+                        </p>
+                        <p>
+                            I possess growing experience in **full-stack development**, **machine learning**, and **system design**. I enjoy building practical projects and learning new technologies quickly, frequently exploring advanced areas such as embedded systems, blockchain technology, and core CS concepts.
+                        </p>
+                        <p>
+                            As I grow into a confident and well-rounded engineer, I am actively focusing on improving my communication and presentation skills, ensuring I can articulate complex technical concepts effectively.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TECH STACK - Skills Showcase (Data Flow Background) -->
+        <section id="tech-stack" class="page-section">
+            <canvas id="tech-stack-canvas" class="page-canvas"></canvas>
+            <div class="section-content w-full">
+                <h2 class="text-4xl font-extrabold mb-12" style="color: var(--secondary-color); border-bottom: 3px solid var(--color-primary-start);">Core Tech Stack</h2>
+                <div class="max-w-3xl mx-auto w-full space-y-4 p-6 bg-white rounded-xl shadow-xl border border-gray-100" id="tech-stack-container">
+                    
+                    <!-- Skill items -->
+                    <div class="skill-item" data-percentage="70">
+                        <h3 class="skill-name">Python</h3>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar" style="width: 70%;"></div>
+                        </div>
+                        <span class="skill-percent">70%</span>
+                    </div>
+                    <div class="skill-item" data-percentage="50">
+                        <h3 class="skill-name">Java</h3>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar" style="width: 50%;"></div>
+                        </div>
+                        <span class="skill-percent">50%</span>
+                    </div>
+                    <div class="skill-item" data-percentage="70">
+                        <h3 class="skill-name">C</h3>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar" style="width: 70%;"></div>
+                        </div>
+                        <span class="skill-percent">70%</span>
+                    </div>
+                    <div class="skill-item" data-percentage="50">
+                        <h3 class="skill-name">C++</h3>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar" style="width: 50%;"></div>
+                        </div>
+                        <span class="skill-percent">50%</span>
+                    </div>
+                    <div class="skill-item" data-percentage="50">
+                        <h3 class="skill-name">JavaScript</h3>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar" style="width: 50%;"></div>
+                        </div>
+                        <span class="skill-percent">50%</span>
+                    </div>
+                    <div class="skill-item" data-percentage="30">
+                        <h3 class="skill-name">React</h3>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar" style="width: 30%;"></div>
+                        </div>
+                        <span class="skill-percent">30%</span>
+                    </div>
+                    <div class="skill-item" data-percentage="60">
+                        <h3 class="skill-name">MySQL</h3>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar" style="width: 60%;"></div>
+                        </div>
+                        <span class="skill-percent">60%</span>
+                    </div>
+                    <div class="skill-item" data-percentage="40">
+                        <h3 class="skill-name">Haskell</h3>
+                        <div class="skill-bar-container">
+                            <div class="skill-bar" style="width: 40%;"></div>
+                        </div>
+                        <span class="skill-percent">40%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. PROJECTS - Project Cards (Subtle Warp Background) -->
+        <section id="projects" class="page-section">
+            <canvas id="projects-canvas" class="page-canvas"></canvas>
+            <div class="section-content w-full">
+                <h2 class="text-4xl font-extrabold mb-12" style="color: var(--secondary-color); border-bottom: 3px solid var(--color-primary-start);">Featured Projects</h2>
+                <div class="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-10">
+                    
+                    <!-- Project 1: Smart Trolley Billing System -->
+                    <div class="project-card bg-white shadow-xl">
+                        <img src="https://placehold.co/600x350/E5E5E5/7E57C2?text=Smart+Trolley+System" alt="Smart Trolley Billing System" class="w-full h-56 object-cover border-b-4" style="border-color: var(--color-accent);">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Smart Trolley Billing System</h3>
+                            <p class="text-gray-500 text-sm mb-4">Developed a smart trolley billing system using **RFID sensors** for automated product identification and checkout. My role was focused on **RFID sensor configuration** to ensure accurate product scanning and system efficiency.</p>
+                            
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tech-tag">STM32</span>
+                                <span class="tech-tag">RFID</span>
+                                <span class="tech-tag">Embedded C</span>
+                                <span class="tech-tag">Keil</span>
+                                <span class="tech-tag">LCD</span>
+                            </div>
+                            
+                            <div class="flex space-x-4">
+                                <a href="[Link to Git Repository]" target="_blank" class="project-btn">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                    Git Repo
+                                </a>
+                                <a href="[Link to Video Demo]" target="_blank" class="project-btn">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.64v6.72a1 1 0 01-1.447.886L15 14M5 18h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    Video Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Project 2: Real-Time Patient Monitoring System -->
+                    <div class="project-card bg-white shadow-xl">
+                        <img src="https://placehold.co/600x350/E5E5E5/FF7043?text=Patient+Monitoring+AI" alt="Real-Time Patient Monitoring System" class="w-full h-56 object-cover border-b-4" style="border-color: var(--color-primary-start);">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Real-Time Patient Monitoring System (Distributed AI)</h3>
+                            <p class="text-gray-500 text-sm mb-4">A complete, end-to-end framework for real-time patient monitoring using a distributed AI architecture. The system ingests simulated IoT data at the edge using **EdgeX Foundry**, processes it with a **Deep Reinforcement Learning (DRL)** model running in a **Kubernetes** cluster, and simulates a **Federated Learning (FL)** loop for collaborative, privacy-preserving model improvement. Key feature: dynamic, performance-based **autoscaling**.</p>
+                            
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tech-tag">EdgeX Foundry (IoT)</span>
+                                <span class="tech-tag">DRL (AI)</span>
+                                <span class="tech-tag">Kubernetes</span>
+                                <span class="tech-tag">Federated Learning</span>
+                                <span class="tech-tag">Autoscaling</span>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <a href="[Link to Git Repository]" target="_blank" class="project-btn">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                    Git Repo
+                                </a>
+                                <a href="[Link to Video Demo]" target="_blank" class="project-btn">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.64v6.72a1 1 0 01-1.447.886L15 14M5 18h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    Video Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. CONTACT ME - Form Section (Console Animation) -->
+        <section id="contact-me" class="page-section">
+            <canvas id="contact-me-canvas" class="page-canvas"></canvas>
+            <div class="section-content w-full">
+                <h2 class="text-4xl font-extrabold mb-12" style="color: var(--secondary-color); border-bottom: 3px solid var(--color-primary-start);">Get In Touch</h2>
+                <div class="max-w-xl mx-auto w-full p-8 rounded-xl bg-white shadow-xl border border-gray-100 transition transform hover:shadow-2xl hover:scale-[1.005]">
+                    
+                    <!-- Social Icons -->
+                    <div class="flex justify-center mb-8 space-x-4">
+                        <!-- LinkedIn -->
+                        <a href="https://www.linkedin.com/in/kalyan-kumar-reddy-challa-273b43290/" target="_blank" aria-label="LinkedIn Profile" class="social-icon">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72c0-.95-.79-1.72-1.77-1.72zM7.05 20.49H3.59V8.67h3.46v11.82zM5.32 7.4A2.08 2.08 0 115.35 3.24a2.08 2.08 0 01-.03 4.16zM20.49 20.49h-3.45v-5.61c0-1.34-.03-3.07-1.87-3.07-1.87 0-2.16 1.46-2.16 2.97v5.71h-3.46V8.67h3.32v1.52h.05c.46-.87 1.58-1.79 3.25-1.79 3.48 0 4.13 2.29 4.13 5.27v6.82h-.01z"/></svg>
+                        </a>
+                        
+                        <!-- GitHub -->
+                        <a href="https://github.com/Kalyan-4406" target="_blank" aria-label="GitHub Profile" class="social-icon">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.418 2.865 8.163 6.83 9.48.5.092.682-.217.682-.483 0-.237-.008-.888-.013-1.745-2.782.607-3.37-1.34-3.37-1.34-.454-1.152-1.11-1.463-1.11-1.463-.907-.62.068-.608.068-.608 1.002.07 1.53 1.03 1.53 1.03.88 1.52 2.307 1.082 2.873.826.09-.64.343-1.083.626-1.334-2.195-.246-4.512-1.076-4.512-4.78 0-1.057.378-1.92.998-2.593-.1-.247-.433-1.29.097-2.545 0 0 .813-.26 2.66.985a9.42 9.42 0 012.446-.33 9.42 9.42 0 012.445.33c1.846-1.245 2.659-.985 2.659-.985.53 1.255.197 2.298.098 2.545.62.673.998 1.536.998 2.593 0 3.713-2.317 4.53-4.521 4.773.353.307.674.918.674 1.854 0 1.336-.012 2.413-.012 2.745 0 .267.181.58.688.48C19.137 20.17 22 16.425 22 12.017 22 6.484 17.523 2 12 2z" clip-rule="evenodd"></path></svg>
+                        </a>
+                        
+                        <!-- Instagram -->
+                        <a href="[Link to Instagram]" target="_blank" aria-label="Instagram Profile" class="social-icon">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7.8 2h8.4C17.65 2 19 3.35 19 5.06v13.88C19 20.65 17.65 22 15.6 22H7.8C5.75 22 4.4 20.65 4.4 18.94V5.06C4.4 3.35 5.75 2 7.8 2zm-.6 4.73A1.17 1.17 0 018.37 5.56h7.26a1.17 1.17 0 011.17 1.17v7.26a1.17 1.17 0 01-1.17 1.17H8.37A1.17 1.17 0 017.2 13.99V6.73zm9.4 6.94a.56.56 0 110-1.12.56.56 0 010 1.12zm-4.7 0a3.46 3.46 0 110-6.92 3.46 3.46 0 010 6.92zm-.01-5.74a2.28 2.28 0 100 4.56 2.28 2.28 0 000-4.56z"/></svg>
+                        </a>
+                    </div>
+                    
+                    <form class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Name</label>
+                            <input type="text" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2" style="--tw-ring-color: var(--color-accent);" placeholder="Your Name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                            <input type="email" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2" style="--tw-ring-color: var(--color-accent);" placeholder="you@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Message</label>
+                            <textarea rows="4" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2" style="--tw-ring-color: var(--color-accent);" placeholder="What can we build together?"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 text-lg font-bold text-white rounded-full btn-primary gradient-bg">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 mt-16 border-t border-gray-200 bg-white">
+        <p class="text-sm text-gray-500">
+            &copy; <span id="current-year"></span> KK. All rights reserved.
+        </p>
+    </footer>
+
+    <!-- Navigation & Theme Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('#desktop-nav a');
+            const pageSections = document.querySelectorAll('.page-section');
+            const typingElement = document.querySelector('.typing-effect');
+            const themeToggle = document.getElementById('theme-toggle');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            let animationFrames = []; 
+            
+            const BG_LIGHT = '#F7F7F7';
+            const BG_DARK = '#121212';
+            
+            // --- THEME TOGGLE FUNCTIONALITY ---
+            function setDarkMode(isDark) {
+                if (isDark) {
+                    document.body.classList.add('dark-mode');
+                    moonIcon.classList.add('hidden');
+                    sunIcon.classList.remove('hidden');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                }
+                // Re-apply correct background based on current page state
+                const currentRoute = window.location.hash.substring(1) || 'home';
+                document.body.style.backgroundColor = (currentRoute === 'home' && isDark) ? BG_DARK : (isDark ? '#1A1A1A' : BG_LIGHT);
+            }
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = document.body.classList.contains('dark-mode');
+                setDarkMode(!isDark);
+            });
+            
+            // --- CANVAS ANIMATION LOGIC ---
+            
+            function stopAllAnimations() {
+                animationFrames.forEach(id => cancelAnimationFrame(id));
+                animationFrames = [];
+            }
+
+            // 1. HOME: Particle Network (Dark BG)
+            function initHomeAnimation() {
+                const canvas = document.getElementById('home-canvas');
+                if (!canvas) return; 
+                
+                const ctx = canvas.getContext('2d');
+                let particles = [];
+                let mouse = { x: null, y: null, radius: 150 };
+
+                function resizeCanvas() {
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = canvas.parentElement.clientHeight;
+                    init();
+                }
+
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas(); 
+
+                canvas.addEventListener('mousemove', function(event) {
+                    const rect = canvas.getBoundingClientRect();
+                    mouse.x = event.clientX - rect.left;
+                    mouse.y = event.clientY - rect.top;
+                });
+
+                canvas.addEventListener('mouseleave', function() {
+                    mouse.x = null;
+                    mouse.y = null;
+                });
+
+                class Particle {
+                    constructor(x, y, directionX, directionY, size, color) {
+                        this.x = x; this.y = y; this.directionX = directionX; 
+                        this.directionY = directionY; this.size = size; this.color = color;
+                    }
+                    draw() {
+                        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill();
+                    }
+                    update() {
+                        if (this.x + this.size > canvas.width || this.x - this.size < 0) this.directionX = -this.directionX;
+                        if (this.y + this.size > canvas.height || this.y - this.size < 0) this.directionY = -this.directionY;
+                        this.x += this.directionX;
+                        this.y += this.directionY;
+
+                        if (mouse.x !== null && mouse.y !== null) {
+                            let dx = mouse.x - this.x; let dy = mouse.y - this.y; let distance = Math.sqrt(dx * dx + dy * dy);
+                            if (distance < mouse.radius) {
+                                let forceDirectionX = dx / distance; let forceDirectionY = dy / distance; let maxSpeed = 3;
+                                let force = (mouse.radius - distance) / mouse.radius; let directionX = forceDirectionX * force * maxSpeed;
+                                let directionY = forceDirectionY * force * maxSpeed;
+                                this.x -= directionX; this.y -= directionY;
+                            }
+                        }
+                        this.draw();
+                    }
+                }
+
+                function init() {
+                    particles = [];
+                    let numberOfParticles = (canvas.width * canvas.height) / 15000; 
+                    for (let i = 0; i < numberOfParticles; i++) {
+                        let size = Math.random() * 3 + 1;
+                        let x = Math.random() * (canvas.width - size * 2) + size;
+                        let y = Math.random() * (canvas.height - size * 2) + size;
+                        let speed = Math.random() * 0.4 + 0.1;
+                        let directionX = (Math.random() * speed * 2) - speed; 
+                        let directionY = (Math.random() * speed * 2) - speed; 
+                        let color = `rgba(126, 87, 194, ${Math.random() * 0.5 + 0.3})`; 
+                        particles.push(new Particle(x, y, directionX, directionY, size, color));
+                    }
+                }
+
+                function connect() {
+                    const connectDistance = (canvas.width / 7) * (canvas.height / 7);
+                    for (let a = 0; a < particles.length; a++) {
+                        for (let b = a; b < particles.length; b++) {
+                            let distanceSquared = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x)) + ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
+                            if (distanceSquared < connectDistance) {
+                                let opacityValue = 1 - (distanceSquared / connectDistance); 
+                                ctx.strokeStyle = `rgba(236, 64, 122, ${opacityValue})`; 
+                                ctx.lineWidth = 1;
+                                ctx.beginPath();
+                                ctx.moveTo(particles[a].x, particles[a].y);
+                                ctx.lineTo(particles[b].x, particles[b].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+
+                function animate() {
+                    animationFrames.push(requestAnimationFrame(animate));
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    connect();
+                    for (let i = 0; i < particles.length; i++) {
+                        particles[i].update();
+                    }
+                }
+
+                init();
+                animate();
+            }
+
+            // 2. ABOUT: Subtle Ripples/Sine Waves (Light BG)
+            function initAboutAnimation() {
+                const canvas = document.getElementById('about-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                let waveOffset = 0;
+                let particles = [];
+                const particleCount = 20;
+
+                function resizeCanvas() {
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = canvas.parentElement.clientHeight;
+                }
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas();
+
+                for(let i = 0; i < particleCount; i++) {
+                    particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 5 + 2, speed: Math.random() * 0.5 + 0.1, angle: Math.random() * 360 });
+                }
+                
+                function drawWaves() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(0, canvas.height / 2);
+                    for (let x = 0; x < canvas.width; x += 5) {
+                        let y = canvas.height / 2 + Math.sin(x * 0.02 + waveOffset * 0.1) * 30;
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.strokeStyle = 'rgba(255, 112, 67, 0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0, canvas.height / 2);
+                    for (let x = 0; x < canvas.width; x += 5) {
+                        let y = canvas.height / 2 + Math.cos(x * 0.015 + waveOffset * 0.05) * 40;
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.strokeStyle = 'rgba(236, 64, 122, 0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    waveOffset += 0.05;
+
+                    particles.forEach(p => {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(126, 87, 194, 0.3)`;
+                        ctx.fill();
+
+                        p.x += Math.cos(p.angle) * p.speed;
+                        p.y += Math.sin(p.angle) * p.speed;
+
+                        if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
+                            p.x = Math.random() * canvas.width;
+                            p.y = Math.random() * canvas.height;
+                        }
+                    });
+
+                    animationFrames.push(requestAnimationFrame(drawWaves));
+                }
+
+                drawWaves();
+            }
+
+            // 3. TECH STACK: Data Flow / Vertical Lines (Light BG)
+            function initTechStackAnimation() {
+                const canvas = document.getElementById('tech-stack-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                let lines = [];
+                const lineCount = 30;
+
+                function resizeCanvas() {
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = canvas.parentElement.clientHeight;
+                    lines = [];
+                    for(let i = 0; i < lineCount; i++) {
+                        lines.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, length: Math.random() * 60 + 20, speed: Math.random() * 1.5 + 0.5, color: `rgba(126, 87, 194, ${Math.random() * 0.2 + 0.1})` });
+                    }
+                }
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas();
+
+                function drawLines() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    lines.forEach(line => {
+                        ctx.beginPath();
+                        ctx.moveTo(line.x, line.y);
+                        ctx.lineTo(line.x, line.y + line.length);
+                        ctx.strokeStyle = line.color;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                        
+                        line.y += line.speed;
+                        if (line.y > canvas.height) {
+                            line.y = -line.length;
+                            line.x = Math.random() * canvas.width;
+                        }
+                    });
+
+                    animationFrames.push(requestAnimationFrame(drawLines));
+                }
+
+                drawLines();
+            }
+
+            // 4. PROJECTS: Subtle Grid Warp (Light BG)
+            function initProjectsAnimation() {
+                const canvas = document.getElementById('projects-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                let distortion = 0;
+                const gridSize = 40;
+
+                function resizeCanvas() {
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = canvas.parentElement.clientHeight;
+                }
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas();
+
+                function drawGrid() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.strokeStyle = 'rgba(255, 112, 67, 0.15)'; 
+                    ctx.lineWidth = 1;
+
+                    for (let i = 0; i < canvas.width / gridSize; i++) {
+                        for (let j = 0; j < canvas.height / gridSize; j++) {
+                            let x = i * gridSize;
+                            let y = j * gridSize;
+                            
+                            let warpX = x + Math.sin(y * 0.05 + distortion) * 5;
+                            let warpY = y + Math.cos(x * 0.05 + distortion) * 5;
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(warpX, warpY);
+                            ctx.lineTo(warpX + gridSize, warpY);
+                            ctx.stroke();
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(warpX, warpY);
+                            ctx.lineTo(warpX, warpY + gridSize);
+                            ctx.stroke();
+                        }
+                    }
+
+                    distortion += 0.02;
+                    animationFrames.push(requestAnimationFrame(drawGrid));
+                }
+
+                drawGrid();
+            }
+
+            // 5. CONTACT ME: Console Glitch Effect (Light BG)
+            function initContactAnimation() {
+                const canvas = document.getElementById('contact-me-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const charSet = "01"; 
+                let columns = Math.floor(canvas.width / 10);
+                let drops = [];
+
+                function resizeCanvas() {
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = canvas.parentElement.clientHeight;
+                    columns = Math.floor(canvas.width / 10);
+                    drops = [];
+                    for(let i = 0; i < columns; i++) drops[i] = 1; 
+                }
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas();
+
+                function drawGlitch() {
+                    // Adjust color based on global theme mode
+                    const isDark = document.body.classList.contains('dark-mode');
+                    ctx.fillStyle = isDark ? 'rgba(26, 26, 26, 0.05)' : 'rgba(247, 247, 247, 0.05)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    ctx.font = '10px Inter';
+                    
+                    for(let i = 0; i < drops.length; i++) {
+                        let text = charSet[Math.floor(Math.random() * charSet.length)];
+                        
+                        ctx.fillStyle = 'rgba(236, 64, 122, 0.8)';
+                        ctx.fillText(text, i * 10, drops[i] * 10);
+                        
+                        if (drops[i] * 10 > canvas.height && Math.random() > 0.975) {
+                            drops[i] = 0;
+                        }
+                        drops[i]++;
+                    }
+                    animationFrames.push(requestAnimationFrame(drawGlitch));
+                }
+
+                drawGlitch();
+            }
+
+
+            // --- ROUTER AND UI LOGIC ---
+
+            function updateActiveNav(route) {
+                navLinks.forEach(link => {
+                    link.classList.remove('nav-link-active');
+                    if (link.getAttribute('data-target') === route) {
+                        link.classList.add('nav-link-active');
+                    }
+                });
+            }
+
+            function updateTheme(route) {
+                const isHome = route === 'home';
+                const isDark = document.body.classList.contains('dark-mode');
+                
+                // 1. Stop previous animations and start new one
+                stopAllAnimations();
+
+                if (isHome) {
+                    initHomeAnimation();
+                } else if (route === 'about') {
+                    initAboutAnimation();
+                } else if (route === 'tech-stack') {
+                    initTechStackAnimation();
+                } else if (route === 'projects') {
+                    initProjectsAnimation();
+                } else if (route === 'contact-me') {
+                    initContactAnimation();
+                }
+
+                // 2. Handle Typing Effect
+                if (typingElement) {
+                    typingElement.style.animation = 'none';
+                    void typingElement.offsetWidth;
+                    typingElement.style.width = isHome ? '0' : '100%';
+                    if (isHome) {
+                         typingElement.style.animation = 'typing 3.5s steps(40, end) 1s forwards, blink-caret .75s step-end infinite';
+                    }
+                }
+
+                // 3. Handle Page Visibility and BG
+                pageSections.forEach(section => {
+                    section.classList.remove('active');
+                    section.classList.add('hidden'); 
+
+                    if(section.id === route) {
+                        section.classList.remove('hidden');
+                        
+                        setTimeout(() => {
+                            section.classList.add('active');
+                            window.scrollTo(0,0);
+                        }, 50);
+                    }
+                });
+
+                // 4. Update Body BG (Home page always uses dark canvas background color if in dark mode)
+                document.body.style.backgroundColor = (isHome && isDark) ? BG_DARK : (isDark ? '#1A1A1A' : BG_LIGHT);
+
+                // 5. Update Nav
+                updateActiveNav(route);
+            }
+
+            function navigate() {
+                let route = window.location.hash.substring(1) || 'home';
+                if (route === 'contact') { 
+                    route = 'contact-me';
+                }
+                updateTheme(route);
+            }
+
+            // Setup
+            if (!window.location.hash || window.location.hash === '#contact') {
+                window.location.hash = '#home';
+            }
+            window.addEventListener('hashchange', navigate);
+            navigate(); 
+
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        });
+    </script>
+</body>
+</html>
