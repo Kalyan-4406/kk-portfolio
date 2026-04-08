@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Kalyan Kumar Reddy's projects — CI pipeline, patient monitoring AI, corporate document management, smart trolley, distributed job scheduler.">
+  <title>Projects | Kalyan Kumar Reddy</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .projects-section {
+      padding: 80px 0 100px;
+    }
+
+    /* Filter Pills */
+    .filter-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .filter-btn {
+      padding: 8px 20px;
+      border-radius: var(--radius-pill);
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer;
+      border: 1px solid var(--clr-border);
+      background: transparent;
+      color: var(--clr-muted);
+      transition: var(--transition);
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: var(--clr-purple);
+      color: var(--clr-purple);
+    }
+
+    /* Projects Grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 28px;
+    }
+
+    /* Project Card */
+    .project-card {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(168, 85, 247, 0.2);
+    }
+
+    /* Card Top Banner */
+    .card-banner {
+      height: 180px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-banner-icon {
+      font-size: 4rem;
+      z-index: 1;
+      filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5));
+    }
+
+    .card-banner-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.6;
+    }
+
+    /* Card Body */
+    .card-body {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
+
+    .status-complete {
+      background: rgba(74, 222, 128, 0.15);
+      color: #86EFAC;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .status-ongoing {
+      background: rgba(249, 115, 22, 0.15);
+      color: #FDBA74;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+
+    .status-team {
+      background: rgba(34, 211, 238, 0.15);
+      color: #67E8F9;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--clr-white);
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--clr-muted);
+      line-height: 1.7;
+      flex: 1;
+    }
+
+    .card-desc strong {
+      color: var(--clr-text);
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .card-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: var(--transition);
+      border: 1px solid var(--clr-border);
+      color: var(--clr-muted);
+      background: transparent;
+    }
+
+    .card-btn:hover {
+      border-color: var(--clr-purple);
+      color: var(--clr-purple);
+      background: rgba(168, 85, 247, 0.1);
+    }
+
+    .card-btn.primary {
+      background: var(--grad-main);
+      border-color: transparent;
+      color: white;
+    }
+
+    .card-btn.primary:hover {
+      box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+      transform: scale(1.03);
+    }
+
+    /* Highlight Card (Full Width) */
+    .project-card.featured {
+      grid-column: 1 / -1;
+      flex-direction: row;
+    }
+
+    .project-card.featured .card-banner {
+      width: 320px;
+      min-width: 320px;
+      height: auto;
+      flex-shrink: 0;
+    }
+
+    /* Page Hero */
+    .page-hero {
+      padding: 60px 0 40px;
+      border-bottom: 1px solid var(--clr-border);
+      margin-bottom: 60px;
+    }
+
+    @media (max-width: 900px) {
+      .project-card.featured {
+        flex-direction: column;
+      }
+
+      .project-card.featured .card-banner {
+        width: 100%;
+        min-width: unset;
+        height: 180px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="projects-canvas" class="page-canvas"></canvas>
+  <div class="scroll-progress" id="scroll-progress"></div>
+
+  <nav class="main-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">KK<span>.dev</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="tech-stack.html">Tech Stack</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="tech-stack.html">Tech Stack</a>
+    <a href="projects.html">Projects</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <main class="page-wrapper">
+    <div class="page-hero">
+      <div class="container">
+        <span class="section-label">What I've Built</span>
+        <h1 class="section-title gradient-text" style="max-width:600px;">Featured Projects</h1>
+        <p class="section-subtitle" style="margin-bottom:0;">5 projects across AI, embedded systems, web, and
+          distributed computing.</p>
+      </div>
+    </div>
+
+    <section class="projects-section">
+      <div class="container">
+
+        <!-- Filter Row -->
+        <div class="filter-row">
+          <button class="filter-btn active" data-filter="all">All (5)</button>
+          <button class="filter-btn" data-filter="ai">AI / ML</button>
+          <button class="filter-btn" data-filter="web">Full Stack</button>
+          <button class="filter-btn" data-filter="embedded">Embedded</button>
+          <button class="filter-btn" data-filter="distributed">Distributed</button>
+          <button class="filter-btn" data-filter="ongoing">Ongoing</button>
+        </div>
+
+        <div class="projects-grid" id="projects-grid">
+
+          <!-- ════════════════════════════════════════
+               PROJECT 1 — CI Living Documentation (FEATURED)
+               ════════════════════════════════════════ -->
+          <div class="glass-card project-card featured reveal" data-categories="web ai">
+            <div class="card-banner" style="background: linear-gradient(135deg, #1e0a3c, #2d1060);">
+              <div class="card-banner-icon">📚</div>
+              <div class="card-banner-bg"
+                style="background: radial-gradient(ellipse at 30% 50%, rgba(168,85,247,0.4) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(236,72,153,0.3) 0%, transparent 60%);">
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-top-row">
+                <h3 class="card-title">CI-Integrated Living Documentation System</h3>
+                <span class="card-status status-team">👥 Team</span>
+              </div>
+              <p class="card-desc">
+                Engineered a <strong>4-epic end-to-end CI pipeline</strong> that auto-generates and publishes living
+                documentation on every commit — eliminating manual doc maintenance entirely.<br><br>
+                Built a <strong>Delta Merge Engine (merger.py)</strong> merging only changed files (CRUD ops) into
+                cumulative state, cutting CI doc generation time by <strong>70%</strong>. Implemented a
+                <strong>Determinism Guarantee Engine</strong> with 3-run SHA-256 hash consistency and a
+                <strong>Cross-File Consistency Validator</strong>. Delivered a full-stack documentation portal
+                with tabbed viewers for Architecture, Impact Analysis, Drift Detection, API Explorer, and Validation.
+              </p>
+              <div class="card-tags">
+                <span class="pill pill-purple">GitHub Actions</span>
+                <span class="pill pill-pink">Python</span>
+                <span class="pill pill-cyan">TypeScript</span>
+                <span class="pill pill-orange">React.js</span>
+                <span class="pill pill-green">Node.js</span>
+                <span class="pill pill-purple">Azure Blob</span>
+              </div>
+              <div class="card-actions">
+                <a href="https://github.com/DocPulseAI" target="_blank" class="card-btn primary">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.418 2.865 8.163 6.83 9.48.5.092.682-.217.682-.483 0-.237-.009-.888-.013-1.745-2.782.607-3.369-1.34-3.369-1.34-.454-1.152-1.11-1.459-1.11-1.459-.908-.619.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988.1.03-2.599-.1-.247-.432-1.285.097-2.541 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.279.202 2.298.1 2.541.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                  </svg>
+                  View on GitHub
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ════════════════════════════════════════
+               PROJECT 2 — Patient Monitoring AI
+               ════════════════════════════════════════ -->
+          <div class="glass-card project-card reveal reveal-delay-1" data-categories="ai distributed">
+            <div class="card-banner" style="background: linear-gradient(135deg, #0a1628, #0a2540);">
+              <div class="card-banner-icon">🏥</div>
+              <div class="card-banner-bg"
+                style="background: radial-gradient(ellipse at 50% 50%, rgba(34,211,238,0.35) 0%, transparent 70%);">
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-top-row">
+                <h3 class="card-title">Real-Time Patient Monitoring (Distributed AI)</h3>
+                <span class="card-status status-complete">✓ Completed</span>
+              </div>
+              <p class="card-desc">
+                End-to-end framework for real-time patient monitoring using distributed AI. Ingests simulated
+                IoT data via <strong>EdgeX Foundry</strong>, processes with a <strong>Deep Reinforcement
+                  Learning</strong>
+                model on <strong>Kubernetes</strong>. Simulates a <strong>Federated Learning</strong> loop for
+                privacy-preserving model improvement. Features dynamic performance-based <strong>autoscaling</strong>.
+              </p>
+              <div class="card-tags">
+                <span class="pill pill-cyan">EdgeX Foundry</span>
+                <span class="pill pill-purple">DRL (AI)</span>
+                <span class="pill pill-green">Kubernetes</span>
+                <span class="pill pill-pink">Federated Learning</span>
+                <span class="pill pill-orange">Autoscaling</span>
+              </div>
+              <div class="card-actions">
+                <a href="https://github.com/23CSE362-edge-computing-2025-26-odd/capstone-project-05_techtony"
+                  target="_blank" class="card-btn primary">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.418 2.865 8.163 6.83 9.48.5.092.682-.217.682-.483 0-.237-.009-.888-.013-1.745-2.782.607-3.369-1.34-3.369-1.34-.454-1.152-1.11-1.459-1.11-1.459-.908-.619.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988.1.03-2.599-.1-.247-.432-1.285.097-2.541 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.279.202 2.298.1 2.541.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                  </svg>
+                  GitHub Repo
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ════════════════════════════════════════
+               PROJECT 3 — Corporate Document Management
+               ════════════════════════════════════════ -->
+          <div class="glass-card project-card reveal reveal-delay-2" data-categories="web">
+            <div class="card-banner" style="background: linear-gradient(135deg, #0a1a0a, #0d2d0d);">
+              <div class="card-banner-icon">🏢</div>
+              <div class="card-banner-bg"
+                style="background: radial-gradient(ellipse at 50% 50%, rgba(74,222,128,0.3) 0%, transparent 70%);">
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-top-row">
+                <h3 class="card-title">Corporate Employee Document Management System</h3>
+                <span class="card-status status-complete">✓ Completed</span>
+              </div>
+              <p class="card-desc">
+                Full-stack web app for corporate document management. Built a secure identity system with a
+                custom <strong>6-digit OTP login flow</strong> and <strong>JWT-based session protection</strong>
+                with refresh token rotation, backed by a normalized MySQL schema.<br><br>
+                Engineered a centralized <strong>security.js utility</strong> consolidating all cryptographic
+                functions, ensuring consistent data integrity across all corporate document operations.
+              </p>
+              <div class="card-tags">
+                <span class="pill pill-cyan">React.js</span>
+                <span class="pill pill-green">Node.js</span>
+                <span class="pill pill-orange">Express.js</span>
+                <span class="pill pill-purple">MySQL</span>
+                <span class="pill pill-pink">JWT Auth</span>
+              </div>
+              <div class="card-actions">
+                <a href="https://github.com/Kalyan-4406" target="_blank" class="card-btn primary">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.418 2.865 8.163 6.83 9.48.5.092.682-.217.682-.483 0-.237-.009-.888-.013-1.745-2.782.607-3.369-1.34-3.369-1.34-.454-1.152-1.11-1.459-1.11-1.459-.908-.619.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988.1.03-2.599-.1-.247-.432-1.285.097-2.541 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.279.202 2.298.1 2.541.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                  </svg>
+                  GitHub Repo
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ════════════════════════════════════════
+               PROJECT 4 — Smart Trolley
+               ════════════════════════════════════════ -->
+          <div class="glass-card project-card reveal reveal-delay-3" data-categories="embedded">
+            <div class="card-banner" style="background: linear-gradient(135deg, #1a1000, #2d1f00);">
+              <div class="card-banner-icon">🛒</div>
+              <div class="card-banner-bg"
+                style="background: radial-gradient(ellipse at 50% 50%, rgba(249,115,22,0.35) 0%, transparent 70%);">
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-top-row">
+                <h3 class="card-title">Smart Trolley Billing System</h3>
+                <span class="card-status status-complete">✓ Completed</span>
+              </div>
+              <p class="card-desc">
+                Engineered an automated retail checkout solution using <strong>RFID sensors</strong> and the
+                <strong>STM32 microcontroller</strong> for real-time item identification and billing.<br><br>
+                Wrote <strong>high-efficiency bare-metal drivers</strong> in Embedded C for real-time sensor
+                polling with deterministic identification latency. Configured RFID sensors to ensure accurate
+                product scanning and system efficiency.
+              </p>
+              <div class="card-tags">
+                <span class="pill pill-orange">STM32</span>
+                <span class="pill pill-purple">RFID</span>
+                <span class="pill pill-pink">Embedded C</span>
+                <span class="pill pill-cyan">Keil uVision</span>
+                <span class="pill pill-green">LCD Display</span>
+              </div>
+              <div class="card-actions">
+                <a href="https://github.com/Kalyan-4406" target="_blank" class="card-btn primary">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.418 2.865 8.163 6.83 9.48.5.092.682-.217.682-.483 0-.237-.009-.888-.013-1.745-2.782.607-3.369-1.34-3.369-1.34-.454-1.152-1.11-1.459-1.11-1.459-.908-.619.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988.1.03-2.599-.1-.247-.432-1.285.097-2.541 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.279.202 2.298.1 2.541.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                  </svg>
+                  GitHub Repo
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ════════════════════════════════════════
+               PROJECT 5 — Distributed Job Scheduler (Ongoing)
+               ════════════════════════════════════════ -->
+          <div class="glass-card project-card reveal reveal-delay-4" data-categories="distributed ongoing">
+            <div class="card-banner" style="background: linear-gradient(135deg, #0a0a1a, #0f0f30);">
+              <div class="card-banner-icon">⚙️</div>
+              <div class="card-banner-bg"
+                style="background: radial-gradient(ellipse at 30% 50%, rgba(168,85,247,0.3) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(249,115,22,0.2) 0%, transparent 60%);">
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-top-row">
+                <h3 class="card-title">Distributed Job Scheduler & Resource Manager</h3>
+                <span class="card-status status-ongoing">🔄 Ongoing</span>
+              </div>
+              <p class="card-desc">
+                Designing a <strong>high-availability job distribution system</strong> with an orchestration
+                layer to dynamically balance workloads across distributed worker nodes.<br><br>
+                Features <strong>failure detection and task re-queuing</strong> using IPC mechanisms in Python.
+                Implementing fault tolerance strategies to ensure zero task loss during node failures,
+                with a focus on deterministic scheduling behavior.
+              </p>
+              <div class="card-tags">
+                <span class="pill pill-purple">Python</span>
+                <span class="pill pill-orange">Fault Tolerance</span>
+                <span class="pill pill-cyan">Distributed Scheduling</span>
+                <span class="pill pill-pink">IPC</span>
+                <span class="pill pill-green">High Availability</span>
+              </div>
+              <div class="card-actions">
+                <a href="https://github.com/Kalyan-4406/Distributed-Job-Scheduler" target="_blank"
+                  class="card-btn primary">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.418 2.865 8.163 6.83 9.48.5.092.682-.217.682-.483 0-.237-.009-.888-.013-1.745-2.782.607-3.369-1.34-3.369-1.34-.454-1.152-1.11-1.459-1.11-1.459-.908-.619.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988.1.03-2.599-.1-.247-.432-1.285.097-2.541 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.279.202 2.298.1 2.541.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                  </svg>
+                  GitHub Repo
+                </a>
+                <span class="card-btn" style="cursor:default; border-color: rgba(249,115,22,0.3); color: #FDBA74;">
+                  🔄 In Progress
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">KK.dev</div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tech-stack.html">Tech Stack</a>
+        <a href="projects.html">Projects</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-social">
+        <a href="https://github.com/Kalyan-4406" target="_blank" aria-label="GitHub">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.418 2.865 8.163 6.83 9.48.5.092.682-.217.682-.483 0-.237-.009-.888-.013-1.745-2.782.607-3.369-1.34-3.369-1.34-.454-1.152-1.11-1.459-1.11-1.459-.908-.619.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988.1.03-2.599-.1-.247-.432-1.285.097-2.541 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.279.202 2.298.1 2.541.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/in/kalyan-kumar-reddy-challa-273b43290/" target="_blank"
+          aria-label="LinkedIn">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+          </svg>
+        </a>
+        <a href="mailto:kalyanchalla44@gmail.com" aria-label="Email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+        </a>
+      </div>
+      <p class="footer-copy">&copy; <span id="footer-year"></span> Kalyan Kumar Reddy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    AmbientCanvas('projects-canvas', {
+      count: 20,
+      colors: ['rgba(168,85,247,0.2)', 'rgba(249,115,22,0.15)'],
+      maxSize: 1.5,
+      speed: 0.15,
+      connect: false
+    });
+
+    // Filter logic
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.project-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        cards.forEach(card => {
+          const cats = (card.dataset.categories || '').split(' ');
+          const show = f === 'all' || cats.includes(f);
+          card.style.display = show ? '' : 'none';
+          card.style.opacity = show ? '1' : '0';
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
