@@ -50,7 +50,7 @@ kk-portfolio/
 │   └── style.css       # 🎨 Shared design system (variables, components, layout)
 ├── js/
 │   └── main.js         # ⚡ Shared utilities (cursor, nav, canvas, animations)
-├── my.jpg              # 📷 Profile photo (optional)
+├── img.jpeg            # 📷 Profile photo
 ├── .gitignore
 └── README.md
 ```
